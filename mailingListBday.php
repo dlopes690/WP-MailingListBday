@@ -13,27 +13,37 @@
 		{
 			global $wpdb;
 			$table = $wpdb->prefix."mlbday";
-			if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+			//if($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
 				//echo 'TABLE NOT CREATED';
-		
+				
 				$structure = "CREATE TABLE $table (
 						id INT(9) NOT NULL AUTO_INCREMENT,
+						mlbday_formdate DATE NOT NULL,
 						mlbday_fname VARCHAR(200) NOT NULL,
 						mlbday_lname VARCHAR(200) NOT NULL,
 						mlbday_formemail VARCHAR(200) NOT NULL,
 						mlbday_formoccasion VARCHAR(200) NOT NULL,
-						mlbday_formdate DATE(50) NOT NULL,
 					UNIQUE KEY id (id)
 				);";
 				$wpdb->query($structure);
-			}
+				
+				//$wpdb->insert($table, array(
+				//	'mlbday_fname' => 'Adam',
+				//	'mlbday_lname' => 'James',
+				//	'mlbday_formemail' => 'aj@aj.com',
+				//	'mlbday_formoccasion' => 'Birthday',
+				//	
+				//));
+			//}
 		}
 		
 		register_activation_hook( __FILE__, 'mlbday_install' );
 		
 			//Plugin Deactivation
 		function mlbday_uninstall() {
-			global $wpdb;	
+			global $wpdb;
+			$drop = "DROP TABLE $table";
+			$wpdb->query($drop);
 		}
 		register_deactivation_hook( __FILE__, 'mlbday_uninstall' );
 	
@@ -160,4 +170,32 @@
 		add_action( 'widgets_init', 'myplugin_register_widgets' );		
 
 		///////////////////////END WIDGET STUFF //////////////
+		
+		if($_POST['mailForm_hidden'])
+		{
+			$tableName = $wpdb->prefix."mlbday";
+			$mlbday_fname = $_POST['mlbday_fname'];
+			
+			$mlbday_lname = $_POST['mlbday_lname'];
+		
+			$mlbday_email = $_POST['mlbday_formemail'];
+		
+			$mlbday_occasion = $_POST['mlbday_occasion'];
+		
+			//$mlbday_date = $_POST['mlbday_date'];
+			$mlbday_date = date('Y-m-d', strtotime($_POST['mlbday_date']));
+			//$mlbday_date = date('m-d', strtotime($_POST['mlbday_date']));
+			//echo $mlbday_date;
+			$exists = mysql_query("SELECT * FROM ".$wpdb->prefix."mlbday where mlbday_formemail like '".$wpdb->escape($mlbday_email)."' limit 1");
+			
+			if (mysql_num_rows($exists) <1) {
+				
+				
+				$insert = "INSERT INTO ".$tableName." (mlbday_fname, mlbday_lname, mlbday_formoccasion, mlbday_formdate, mlbday_formemail) VALUES ('$mlbday_fname', '$mlbday_lname', '$mlbday_occasion', '$mlbday_date', '$mlbday_email')";
+				$wpdb->query($insert);
+				
+			
+			}
+		}
+		
 ?>
