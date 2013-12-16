@@ -194,8 +194,86 @@
 				$insert = "INSERT INTO ".$tableName." (mlbday_fname, mlbday_lname, mlbday_formoccasion, mlbday_formdate, mlbday_formemail) VALUES ('$mlbday_fname', '$mlbday_lname', '$mlbday_occasion', '$mlbday_date', '$mlbday_email')";
 				$wpdb->query($insert);
 				
+				
+				$formname = $mlbday_fname;
+				$formemail = $mlbday_email;
+				
+				//Global Vars
+				$sitename = get_bloginfo('name');
+				$general_options = get_option('sa_general',$sa_general); 
+				$layout_options = get_option('sa_layout',$sa_layout); 
+				
+				$emailto = $general_options['custom_email'];
+				
+				if (empty($emailto)){
+					$emailto = get_bloginfo('admin_email');
+				}
+				
+				$logo = $layout_options['upload_image0']; // get logo.
+				if ($logo == '') { //If there is a custom logo, display it.
+					$logo = '<h1>'.$sitename.'</h1>';
+				}else{
+					$logo = "<img src='".$logo."' id='' alt='$sitename' />";
+				}
+				$site_url = home_url();
+				
+				
+				$emailheader = "<a href='$site_url'>".$logo."</a>";
+
+				//$to = $emailto;
+				$to = 'dlopes690@gmail.com';
+				//$sub = __('A new message from ','eatery'). $sitename;
+				
+				//echo 'formname: '.$formname;
+				//echo 'formemail: '.$formemail;
+				//echo 'sitename: '.$sitename;
+				//echo 'goptions: '.$general_options;
+				//echo 'loptions: '.$layout_options;
+				//echo 'emailto: '.$emailto;
+				//echo 'logo: '.$logo;
+				//echo 'site url: '.$site_url;
+				//echo 'TO: '.$to;
+				//$from_email = 'dlopes690@gmail.com';
+				//$from_name = 'Danny';
+				$sub = 'SUBJECT HERE';
+				$msg = 'testing message';
 			
+					// MAIL PHP FUNCTION WORK, HOWEVER LETS TRY DEBUGGING pluggable.php  TO SEE WHY WP_MAIL DOESNT WORK
+				//mail($to, $sub, $msg);
+				
+			
+				//$phpmailer->From     = apply_filters( 'wp_mail_from'     , $from_email );
+				//$phpmailer->FromName = apply_filters( 'wp_mail_from_name', $from_name  );
+				//$headers = array("From: Test Name <dlopes690@gmail.com>",
+				//"Content-Type: text/html"."\r\n"
+				//);
+				//$h = implode("\r\n",$headers) . "\r\n";
+				
+				//add_filter( 'wp_mail_content_type', 'set_html_content_type' );
+				echo 'send over wp mail';
+				wp_mail($to, $sub, $msg);
+				
+				
+				//remove_filter( 'wp_mail_content_type', 'set_html_content_type' );
+				
+				//try {
+				//	$sent = @wp_mail($to, $sub, $msg);
+				//} catch (Exception $e) {
+				//	echo 'message: '.$e->getMessage();
+				//	error_log('oops: ' . $e->getMessage()); // this line is for testing only!
+				//}
+				//
+				//if ( $sent ) {
+				//	error_log('hooray! email sent!'); // so is this one
+				//} else {
+				//	error_log('oh. email not sent.'); // and this one, too
+				//}
+				
 			}
+		}
+		
+		function set_html_content_type() {
+			return 'text/html';
 		}
 		
 ?>
